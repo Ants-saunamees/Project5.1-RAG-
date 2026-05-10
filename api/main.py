@@ -49,5 +49,5 @@ def serve_index():
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
     print(request.question, request.department)
-    answer = generate_answer(request.question, request.department)
+    answer = generate_answer(request.session_id, request.question, request.department)
     return ChatResponse(answer=answer)

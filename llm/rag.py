@@ -1,9 +1,18 @@
 from retrieval.retriever import retrieve
-from llm.client import chat_with_llm  # your LLM wrapper
+from llm.client import chat_with_llm  # your LLM wrapper'
+from llm.query_rewriter import rewrite_query
+from api.messages_repository import MessagesRepository
 
-def generate_answer(question: str, department: str | None = None):
+
+def generate_answer(session_id: str, question: str, department: str | None = None):
+
+    history = MessagesRepository.get_history(session_id)
+
+    rewritten_q = rewrite_query(question)
+
+
     # Step 1: Retrieve relevant chunks
-    results = retrieve(question, n_results=5, department=department)
+    results = retrieve(rewritten_q, n_results=5, department=department)
 
     chunks = results["documents"][0]  # Chroma returns nested lists
 
@@ -18,7 +27,7 @@ If the answer is not in the context, say "I don't know based on the provided doc
 Context:
 {context}
 
-Question: {question}
+Question: {rewritten_q}
 
 Answer:
 """
